@@ -59,9 +59,8 @@ export const buildEntityType = (
             ) => {
               const { store } = context;
 
-              // The parent object gets passed in here with relationship fields defined as the
-              // string ID of the related entity. Here, we get the ID and query for that entity.
-              // Then, the GraphQL server serves the resolved object here instead of the ID.
+              // The GraphQL server serves a list of derived entities by passing the
+              // parent object ID to the `getEntityDerivedField` method.
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               const entityId = parent.id;

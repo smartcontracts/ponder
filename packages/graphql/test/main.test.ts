@@ -1,32 +1,28 @@
 import { Ponder, ResolvedPonderPlugin } from "@ponder/core";
 
-import { graphqlPlugin } from "../src/index";
-
 describe("graphqlPlugin", () => {
   let ponder: Ponder;
   let plugin: ResolvedPonderPlugin;
 
-  // beforeEach(() => {
-  //   plugin = graphqlPlugin();
+  beforeEach(() => {
+    ponder = new Ponder({
+      rootDir: "./test/basic",
+      configFile: "ponder.config.js",
+      silent: false,
+    });
 
-  //   ponder = {
-  //     // schema:
-  //   };
-  // });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    plugin = ponder.plugins.find((p) => p.name === "graphql")!;
+    expect(plugin).toBeDefined();
+  });
 
-  // afterEach(() => {
-  //   plugin.teardown?.();
-  // });
+  afterEach(() => {
+    ponder.kill();
+  });
 
-  // describe("setup", () => {
-  //   it("creates a network using CachedProvider", async () => {
-  //     // expect(ponder.networks.length).toBe(1);
-  //     // const network = ponder.networks[0];
-  //     // expect(network.name).toBe("mainnet");
-  //     // expect(network.chainId).toBe(1);
-  //     // expect(network.provider).toBeInstanceOf(CachedProvider);
-  //     // expect(network.provider.network.chainId).toBe(1);
-  //     // expect(network.provider.connection.url).toBe("rpc://test");
-  //   });
-  // });
+  describe("constructor", () => {
+    it("registers the graphql plugin", async () => {
+      expect(ponder.plugins.length).toBe(1);
+    });
+  });
 });

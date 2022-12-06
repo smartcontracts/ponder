@@ -31,18 +31,24 @@ const operators = {
   singular: ["in", "not_in"],
   plural: [
     "contains",
-    "not_contains",
     "contains_nocase",
+    "not_contains",
     "not_contains_nocase",
   ],
   numeric: ["gt", "lt", "gte", "lte"],
   string: [
+    "contains",
+    "contains_nocase",
+    "not_contains",
+    "not_contains_nocase",
+
     "starts_with",
     "starts_with_nocase",
-    "ends_with",
-    "ends_with_nocase",
     "not_starts_with",
     "not_starts_with_nocase",
+
+    "ends_with",
+    "ends_with_nocase",
     "not_ends_with",
     "not_ends_with_nocase",
   ],
@@ -56,58 +62,47 @@ const buildPluralField = (
 
   // For each field on the entity, create a bunch of filter fields.
   entity.fields
-    // For now, don't create filter fields for relationship or derived types.
-    .filter(
-      (field) =>
-        field.kind !== FieldKind.RELATIONSHIP &&
-        field.kind !== FieldKind.DERIVED
-    )
+    // For now, don't create filter fields for derived types.
+    .filter((field) => field.kind !== FieldKind.DERIVED)
     .forEach((field) => {
       operators.universal.forEach((suffix) => {
         // Small hack to get the correct filter field name.
-        let filterFieldName: string;
-        if (suffix === "") {
-          filterFieldName = `${field.name}`;
-        } else {
-          filterFieldName = `${field.name}_${suffix}`;
-        }
+        const filterFieldName =
+          suffix === "" ? `${field.name}` : `${field.name}_${suffix}`;
+
         filterFields[filterFieldName] = { type: field.baseGqlType };
       });
 
       if (field.kind !== FieldKind.LIST) {
         operators.singular.forEach((suffix) => {
-          const filterFieldName = `${field.name}_${suffix}`;
-
-          filterFields[filterFieldName] = {
-            type: new GraphQLList(field.baseGqlType),
+          filterFields[`${field.name}_${suffix}`] = {
+            type: new GraphQLList(new GraphQLNonNull(field.baseGqlType)),
           };
         });
       }
 
       if (field.kind === FieldKind.LIST) {
         operators.plural.forEach((suffix) => {
-          const filterFieldName = `${field.name}_${suffix}`;
-          filterFields[filterFieldName] = { type: field.baseGqlType };
+          filterFields[`${field.name}_${suffix}`] = { type: field.baseGqlType };
         });
       }
 
       if (
-        field.kind === FieldKind.SCALAR &&
-        ["ID", "Int", "Float"].includes(field.baseGqlType.name)
+        field.kind === FieldKind.ID ||
+        (field.kind === FieldKind.SCALAR &&
+          ["Int", "Float"].includes(field.baseGqlType.name))
       ) {
         operators.numeric.forEach((suffix) => {
-          const filterFieldName = `${field.name}_${suffix}`;
-          filterFields[filterFieldName] = { type: field.baseGqlType };
+          filterFields[`${field.name}_${suffix}`] = { type: field.baseGqlType };
         });
       }
 
       if (
         field.kind === FieldKind.SCALAR &&
-        ["String"].includes(field.baseGqlType.name)
+        field.baseGqlType.name === "String"
       ) {
         operators.string.forEach((suffix) => {
-          const filterFieldName = `${field.name}_${suffix}`;
-          filterFields[filterFieldName] = { type: field.baseGqlType };
+          filterFields[`${field.name}_${suffix}`] = { type: field.baseGqlType };
         });
       }
     });

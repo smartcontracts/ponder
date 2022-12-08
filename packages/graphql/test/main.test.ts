@@ -1,8 +1,14 @@
 import { Ponder, ResolvedPonderPlugin } from "@ponder/core";
 
+import type { GraphqlServer } from "@/server";
+
+type GraphqlPlugin = ResolvedPonderPlugin & {
+  server: GraphqlServer | undefined;
+};
+
 describe("graphqlPlugin", () => {
   let ponder: Ponder;
-  let plugin: ResolvedPonderPlugin;
+  let plugin: GraphqlPlugin;
 
   beforeEach(() => {
     ponder = new Ponder({
@@ -11,8 +17,7 @@ describe("graphqlPlugin", () => {
       silent: false,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    plugin = ponder.plugins.find((p) => p.name === "graphql")!;
+    plugin = ponder.plugins.find((p) => p.name === "graphql") as GraphqlPlugin;
     expect(plugin).toBeDefined();
   });
 
@@ -23,6 +28,10 @@ describe("graphqlPlugin", () => {
   describe("constructor", () => {
     it("registers the graphql plugin", async () => {
       expect(ponder.plugins.length).toBe(1);
+
+      await plugin.setup?.(ponder);
+
+      expect(plugin.server).toBeDefined;
     });
   });
 });

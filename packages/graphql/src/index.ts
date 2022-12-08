@@ -9,11 +9,11 @@ export type PonderGraphqlPluginOptions = {
   port?: number;
 };
 
-let server: GraphqlServer | undefined;
-
 export const graphqlPlugin: PonderPlugin<PonderGraphqlPluginOptions> = ({
   port = 42069,
 } = {}) => {
+  let server: GraphqlServer | undefined;
+
   return {
     name: "graphql",
     setup: async (ponder) => {
@@ -51,5 +51,8 @@ export const graphqlPlugin: PonderPlugin<PonderGraphqlPluginOptions> = ({
     teardown: async () => {
       server?.teardown();
     },
+
+    // additional properties available on return object to ease testing
+    server,
   };
 };

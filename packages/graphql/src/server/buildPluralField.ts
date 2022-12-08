@@ -65,6 +65,11 @@ const buildPluralField = (
     // For now, don't create filter fields for derived types.
     .filter((field) => field.kind !== FieldKind.DERIVED)
     .forEach((field) => {
+      // Handle relationship fields as a special case.
+      if (field.kind == FieldKind.RELATIONSHIP) {
+        return;
+      }
+
       operators.universal.forEach((suffix) => {
         // Small hack to get the correct filter field name.
         const filterFieldName =

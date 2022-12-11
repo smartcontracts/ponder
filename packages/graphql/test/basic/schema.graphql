@@ -1,21 +1,9 @@
 type Token @entity {
   id: ID!
-  tokenId: BigInt!
-  tokenURI: String!
-  image: String!
   owner: Wallet!
 }
 
 type Wallet @entity {
   id: ID!
-  ownedPlots: Int!
   tokens: [Token!] @derivedFrom(field: "owner")
-}
-
-type Transfer @entity {
-  id: ID!
-  fromWallet: Wallet!
-  toWallet: Wallet!
-  tokenId: Int!
-  timestamp: Int!
 }

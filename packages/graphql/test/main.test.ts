@@ -25,10 +25,8 @@ describe("graphqlPlugin", () => {
     ponder.kill();
   });
 
-  describe("constructor", () => {
-    it("registers the graphql plugin", async () => {
-      expect(ponder.plugins.length).toBe(1);
-
+  describe("setup", () => {
+    it("creates the server", async () => {
       await plugin.setup?.(ponder);
 
       expect(plugin.server).toBeDefined;
